@@ -92,7 +92,7 @@ st.sidebar.image(sidebar_image_path, caption="", use_column_width=True)
 st.sidebar.title("Additional Feature")
 
 # Adding a button for Text and Visual Elements Extractor in the sidebar
-text_visual_extractor_link = "http://localhost:8502"  # Replace with the actual URL of your app
+text_visual_extractor_link = "http://10.12.30.50:8502"  # Replace with the actual URL of your app
 
 # Create a button that opens a new tab for the Text and Visual Elements Extractor app
 if st.sidebar.button('Go to Text and Visual Extractor'):
