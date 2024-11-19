@@ -8,7 +8,7 @@ copilot_api_url = "https://copilot5.p.rapidapi.com/copilot"
 copilot_api_key = "93cbb16e85mshd7eae7b8414948dp11ff2cjsne8b79ba01cb3"  # Updated Copilot API key
 
 # Imgur API setup
-imgur_client_id = "a08b121e827f538"
+imgur_client_id = "fef2233a2ffad44"
 
 def save_uploaded_file(uploaded_file):
     save_dir = Path('uploaded_images')
