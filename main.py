@@ -5,10 +5,10 @@ from pathlib import Path
 
 # API setup for Copilot API
 copilot_api_url = "https://copilot5.p.rapidapi.com/copilot"
-copilot_api_key = "25c40aa56fmsh12b48be18760bb1p11101ejsn4236cc697a09"
+copilot_api_key = "39cdf9f051msh87e96ec3172fba2p16c83cjsnc92d4dbc35f5"  # Updated Copilot API key
 
 # Imgur API setup
-imgur_client_id = "8be145a73ee287b"
+imgur_client_id = "fef2233a2ffad44"
 
 def save_uploaded_file(uploaded_file):
     save_dir = Path('uploaded_images')
@@ -30,7 +30,7 @@ def upload_image_and_get_url(image_path):
         if response.status_code == 200:
             return response.json()['data']['link']
         else:
-            st.write(f"Error uploading image to Imgur: {response.status_code} - {response.text}")
+            st.error(f"Error uploading image to Imgur: {response.status_code} - {response.text}")
             return None
 
 def get_copilot_response(message, image_url):
@@ -53,76 +53,131 @@ def get_copilot_response(message, image_url):
     else:
         return {"error": f"Error: {response.status_code} - {response.text}"}
 
-# Custom CSS to apply gradient to the title
+# Custom CSS to apply gradient to the title and improve overall styling
 st.markdown(
     """
     <style>
+    .stApp {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d3436 100%);
+        color: #ffffff;
+    }
     .title {
-        font-size: 4em;
+        font-size: 3em;
         font-weight: bold;
-        background: radial-gradient(
-            64.18% 64.18% at 71.16% 35.69%,
-            #ffd6e7 0.89%,  /* Light Pink */
-            #ffaad5 17.23%, /* Medium Pink */
-            #ff80c4 42.04%, /* Pink */
-            #ff55b3 55.12%, /* Hot Pink */
-            #ff2aa2 71.54%, /* Deep Pink */
-            #ff0080 100%    /* Bright Magenta */
+        background: linear-gradient(
+            90deg,
+            #ff0080,
+            #ff8c00,
+            #40e0d0
         );
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+        margin-bottom: 20px;
+    }
+    .subtitle {
+        font-size: 1.5em;
+        color: #ffffff;
+        margin-bottom: 30px;
+    }
+    .stButton>button {
+        background-color: #ff0080;
+        color: white;
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: #ff8c00;
+        box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+    }
+    .stTextInput>div>div>input {
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    .stFileUploader>div>div {
+        border-radius: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    .stMarkdown {
+        color: #ffffff;
+    }
+    .stAlert {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Streamlit app with sidebar
-
-# st.sidebar.title("Instructions")
-# st.sidebar.info("Upload an image and ask a question about it. The app will provide answers based on the image.")
-
-# Add a line break
-st.sidebar.markdown("<br><br>", unsafe_allow_html=True)
-
-# Add an image to the sidebar
-sidebar_image_path = "alien.png"  # Replace with your image file path
-st.sidebar.image(sidebar_image_path, caption="", use_column_width=True)
-
-# Apply the gradient to the title
+# Page layout
 st.markdown('<h1 class="title">Hey There, I am Lexi</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Your AI-powered Image Analyst</p>', unsafe_allow_html=True)
 
-st.write("#### Upload an image and ask a question about its content:")
-
-file = st.file_uploader("Choose an image file (JPEG, JPG, PNG)", type=["jpeg", "jpg", "png"])
-
-# Image container
-image_container = st.empty()
-
-if file:
-    # Display the uploaded image in a small container
-    image_container.image(file, width=200, caption="Uploaded Image")  # Adjust the width as needed
-
-    user_question = st.text_input('Ask a question about your image:')
+# Sidebar Configuration
+with st.sidebar:
+    st.title("Menu")
+    st.info("Upload an image and ask a question about it. The app will provide answers based on the image.")
     
-    if user_question:
-        # Save the uploaded image and get its path
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Add an image to the sidebar
+    sidebar_image_path = "alien.png"  
+    st.image(sidebar_image_path, caption="", use_column_width=True)
+    
+
+    
+    # Adding a button for Text and Visual Elements Extractor in the sidebar
+    
+    
+    # Create a button that opens a new tab for the Text and Visual Elements Extractor app
+   
+
+# Main content
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.write("#### Upload an image and ask a question about its content:")
+    file = st.file_uploader("Choose an image file (JPEG, JPG, PNG)", type=["jpeg", "jpg", "png"])
+
+    if file:
         image_path = save_uploaded_file(file)
+        st.image(file, width=300, caption="Uploaded Image")
         
-        # Get the URL of the uploaded image
-        image_url = upload_image_and_get_url(image_path)
+        user_question = st.text_input('Ask a question about your image:')
         
-        if image_url:
-            with st.spinner(text="Processing your request..."):
-                response = get_copilot_response(user_question, image_url)
-                
-                if 'error' in response:
-                    st.error(response['error'])
-                else:
-                    st.subheader("Response:")
-                    st.write(response)
-        else:
-            st.error("Failed to upload image and get URL.")
-else:
-    st.info("Please upload an image to proceed.")
+        if user_question:
+            image_url = upload_image_and_get_url(image_path)
+            
+            if image_url:
+                with st.spinner(text="Processing your request..."):
+                    response = get_copilot_response(user_question, image_url)
+                    
+                    if 'error' in response:
+                        st.error(response['error'])
+                    else:
+                        message = response.get("data", {}).get("message", "No message found in the response.")
+                        st.success("Response received!")
+                        with st.expander("See the answer", expanded=True):
+                            st.write(message)
+            else:
+                st.error("Failed to upload image and get URL.")
+    else:
+        st.info("Please upload an image to proceed.")
+
+with col2:
+    st.markdown("""
+    ### How to use Lexi:
+    1. Upload an image using the file uploader.
+    2. Type your question about the image in the text box.
+    3. Wait for Lexi to analyze and respond.
+    """)
+
+# Footer
+st.markdown("<hr>", unsafe_allow_html=True)
+
+
