@@ -3,16 +3,14 @@ import json
 import streamlit as st
 from pathlib import Path
 
-# API setup for Copilot API
+# API setup
 copilot_api_url = "https://copilot5.p.rapidapi.com/copilot"
-copilot_api_key = "39cdf9f051msh87e96ec3172fba2p16c83cjsnc92d4dbc35f5"  # Updated Copilot API key
-
-# Imgur API setup
+copilot_api_key = "39cdf9f051msh87e96ec3172fba2p16c83cjsnc92d4dbc35f5"
 imgur_client_id = "fef2233a2ffad44"
 
 def save_uploaded_file(uploaded_file):
     save_dir = Path('uploaded_images')
-    save_dir.mkdir(exist_ok=True)  # Create directory if it doesn't exist
+    save_dir.mkdir(exist_ok=True)
     file_path = save_dir / uploaded_file.name
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
@@ -39,7 +37,7 @@ def get_copilot_response(message, image_url):
         "conversation_id": None,
         "tone": "BALANCED",
         "markdown": False,
-        "photo_url": image_url  # Provide the uploaded image URL here
+        "image_url": image_url  # ✅ Changed from photo_url to image_url
     }
     headers = {
         "Content-Type": "application/json",
@@ -48,12 +46,16 @@ def get_copilot_response(message, image_url):
     }
 
     response = requests.post(copilot_api_url, headers=headers, data=json.dumps(payload))
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return {"error": f"Error: {response.status_code} - {response.text}"}
 
-# Custom CSS to apply gradient to the title and improve overall styling
+    try:
+        return response.json()
+    except Exception as e:
+        st.error("Failed to parse Copilot API response.")
+        st.write("Raw response:", response.text)
+        st.write("Exception:", str(e))
+        return {"error": "Invalid JSON response"}
+
+# UI Styling
 st.markdown(
     """
     <style>
@@ -114,30 +116,19 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Page layout
+# Header
 st.markdown('<h1 class="title">Hey There, I am Lexi</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Your AI-powered Image Analyst</p>', unsafe_allow_html=True)
 
-# Sidebar Configuration
+# Sidebar
 with st.sidebar:
     st.title("Menu")
     st.info("Upload an image and ask a question about it. The app will provide answers based on the image.")
-    
     st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Add an image to the sidebar
-    sidebar_image_path = "alien.png"  
+    sidebar_image_path = "alien.png"  # Change this path if needed
     st.image(sidebar_image_path, caption="", use_column_width=True)
-    
 
-    
-    # Adding a button for Text and Visual Elements Extractor in the sidebar
-    
-    
-    # Create a button that opens a new tab for the Text and Visual Elements Extractor app
-   
-
-# Main content
+# Main Layout
 col1, col2 = st.columns([2, 1])
 
 with col1:
@@ -147,16 +138,19 @@ with col1:
     if file:
         image_path = save_uploaded_file(file)
         st.image(file, width=300, caption="Uploaded Image")
-        
+
         user_question = st.text_input('Ask a question about your image:')
-        
+
         if user_question:
             image_url = upload_image_and_get_url(image_path)
-            
+
             if image_url:
+                st.write("✅ Image uploaded to Imgur.")
+                st.write("🔗 Image URL:", image_url)
+
                 with st.spinner(text="Processing your request..."):
                     response = get_copilot_response(user_question, image_url)
-                    
+
                     if 'error' in response:
                         st.error(response['error'])
                     else:
@@ -165,7 +159,7 @@ with col1:
                         with st.expander("See the answer", expanded=True):
                             st.write(message)
             else:
-                st.error("Failed to upload image and get URL.")
+                st.error("❌ Failed to upload image and get URL.")
     else:
         st.info("Please upload an image to proceed.")
 
@@ -179,5 +173,3 @@ with col2:
 
 # Footer
 st.markdown("<hr>", unsafe_allow_html=True)
-
-
