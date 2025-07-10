@@ -5,10 +5,10 @@ from pathlib import Path
 
 # API setup for Copilot API
 copilot_api_url = "https://copilot5.p.rapidapi.com/copilot"
-copilot_api_key = "93cbb16e85mshd7eae7b8414948dp11ff2cjsne8b79ba01cb3"  # Updated Copilot API key
+copilot_api_key = "25c40aa56fmsh12b48be18760bb1p11101ejsn4236cc697a09"
 
 # Imgur API setup
-imgur_client_id = "fef2233a2ffad44"
+imgur_client_id = "8be145a73ee287b"
 
 def save_uploaded_file(uploaded_file):
     save_dir = Path('uploaded_images')
@@ -78,26 +78,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Sidebar Configuration
-st.sidebar.title("Menu")
-st.sidebar.info("Upload an image and ask a question about it. The app will provide answers based on the image.")
+# Streamlit app with sidebar
+
+# st.sidebar.title("Instructions")
+# st.sidebar.info("Upload an image and ask a question about it. The app will provide answers based on the image.")
 
 # Add a line break
 st.sidebar.markdown("<br><br>", unsafe_allow_html=True)
 
 # Add an image to the sidebar
-sidebar_image_path = "alien.png"  
+sidebar_image_path = "alien.png"  # Replace with your image file path
 st.sidebar.image(sidebar_image_path, caption="", use_column_width=True)
-
-st.sidebar.title("Additional Feature")
-
-# Adding a button for Text and Visual Elements Extractor in the sidebar
-text_visual_extractor_link = "http://localhost"  # Replace with the actual URL of your app
-
-# Create a button that opens a new tab for the Text and Visual Elements Extractor app
-if st.sidebar.button('Go to Text and Visual Extractor'):
-    js_code = f"window.open('{text_visual_extractor_link}')"
-    st.components.v1.html(f"<script>{js_code}</script>", height=0)
 
 # Apply the gradient to the title
 st.markdown('<h1 class="title">Hey There, I am Lexi</h1>', unsafe_allow_html=True)
@@ -129,10 +120,8 @@ if file:
                 if 'error' in response:
                     st.error(response['error'])
                 else:
-                    # Extract and display only the message from the response
-                    message = response.get("data", {}).get("message", "No message found in the response.")
                     st.subheader("Response:")
-                    st.write(message)
+                    st.write(response)
         else:
             st.error("Failed to upload image and get URL.")
 else:
